@@ -1,6 +1,6 @@
 class Config:
     """Base configuration."""
-    DEBUG = False
+    DEBUG = True
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:password@localhost:5432/dream_jobs"
-
+    SQLALCHEMY_DATABASE_URI = "postgresql://dreamjobs:dreamjobs@localhost:5432/dreamjobs"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

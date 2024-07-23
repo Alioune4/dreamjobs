@@ -1,18 +1,27 @@
 from flask import Flask
 
-from api.job_posting_routes import job_posting_blueprint
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
+from api.connection import db
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-# Load the configuration
-app.config.from_object(Config)
-app.register_blueprint(job_posting_blueprint)
+    # Load the configuration
+    app.config.from_object(Config)
 
-# Initialize extensions
-db = SQLAlchemy(app)
+    # Initialize the database
+    db.init_app(app)
 
-if __name__ == '__main__':
-    app.run(debug=app.config["DEBUG"])
+    # Initialize the migration
+    migrate = Migrate(app, db)
+
+    # Register the blueprints
+    from .job_posting_routes import job_posting_blueprint
+    app.register_blueprint(job_posting_blueprint)
+
+    # import models so that they are detected by Alembic
+    from api.models import User, JobPost
+
+    return app

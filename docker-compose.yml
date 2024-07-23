@@ -1,0 +1,12 @@
+name: 'dream-jobs'
+
+services:
+  postgres:
+    image: 'postgres'
+    container_name: 'dream-jobs-postgres'
+    environment:
+      POSTGRES_USER: 'dreamjobs'
+      POSTGRES_PASSWORD: 'dreamjobs'
+      POSTGRES_DB: 'dreamjobs'
+    ports:
+      - '5432:5432'
