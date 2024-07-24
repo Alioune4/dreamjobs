@@ -43,7 +43,7 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    role: Mapped[RoleEnum] = mapped_column(Enum(RoleEnum), nullable=False)
+    role: Mapped[RoleEnum] = mapped_column(Enum(RoleEnum), nullable=False, default=RoleEnum.JOB_SEEKER)
 
     def __repr__(self):
         return f'<User {self.username}>'

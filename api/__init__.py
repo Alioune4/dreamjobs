@@ -5,21 +5,28 @@ from flask_migrate import Migrate
 
 from api.connection import db
 
+from flask_jwt_extended import JWTManager
+
+jwt = JWTManager()
+
+
 def create_app():
     app = Flask(__name__)
 
     # Load the configuration
     app.config.from_object(Config)
 
-    # Connect sqlalchemy to the app
+    # Initialize extensions
     db.init_app(app)
-
-    # Initialize the migration
     migrate = Migrate(app, db)
+    jwt.init_app(app)
 
     # Register the blueprints
     from .job_posting_routes import job_posting_blueprint
+    from .auth_routes import auth_blueprint
+
     app.register_blueprint(job_posting_blueprint, url_prefix='/api/job-posts')
+    app.register_blueprint(auth_blueprint, url_prefix='/api')
 
     # import models so that they are detected for migrations
     from api.models import User, JobPost
