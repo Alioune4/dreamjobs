@@ -11,6 +11,9 @@ class Role(db.Model):
     def __repr__(self):
         return f'<Role {self.name}>'
 
+    def to_dict(self):
+        return row_to_dict(self)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -25,6 +28,9 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
+    def to_dict(self):
+        return row_to_dict(self)
+
 
 class EmploymentType(db.Model):
     __tablename__ = 'employment_types'
@@ -35,6 +41,9 @@ class EmploymentType(db.Model):
     def __repr__(self):
         return f'<EmploymentType {self.name}>'
 
+    def to_dict(self):
+        return row_to_dict(self)
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -44,6 +53,9 @@ class Category(db.Model):
 
     def __repr__(self):
         return f'<Category {self.name}>'
+
+    def to_dict(self):
+        return row_to_dict(self)
 
 
 class JobPost(db.Model):
@@ -68,6 +80,9 @@ class JobPost(db.Model):
 
     def __repr__(self):
         return f'<Job {self.title}'
+
+    def to_dict(self):
+        return row_to_dict(self)
 
 
 def row_to_dict(row):
