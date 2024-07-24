@@ -21,6 +21,11 @@ def create_app():
     migrate = Migrate(app, db)
     jwt.init_app(app)
 
+    with app.app_context():
+        # Create default admin user
+        from .auth_service import create_default_admin
+        create_default_admin()
+
     # Register the blueprints
     from .job_posting_routes import job_posting_blueprint
     from .auth_routes import auth_blueprint

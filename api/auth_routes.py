@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from .models import db, User, RoleEnum
+from .auth_service import admin_required
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -51,11 +52,8 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-
-def create_default_admin():
-    admin_user = User.query.filter_by(username='admin').first()
-    if not admin_user:
-        hashed_password = generate_password_hash('adminpassword')
-        admin_user = User(username='admin', password=hashed_password, email='admin@example.com', role=RoleEnum.ADMIN)
-        db.session.add(admin_user)
-        db.session.commit()
+@auth_blueprint.route('/admin', methods=['GET'])
+@admin_required
+def protected2():
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
