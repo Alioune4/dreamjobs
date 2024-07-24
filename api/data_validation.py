@@ -1,0 +1,58 @@
+from api.models import EmploymentTypeEnum, CategoryEnum
+
+def validate_enum(enum_class, value):
+    """ Validate if the value exists in the provided enum class. """
+    for enum_value in enum_class:
+        if enum_value.value == value:
+            return True
+    return False
+
+def get_enum_value_from_string(enum_class, value):
+    for enum_value in enum_class:
+        if enum_value.value == value:
+            return enum_value
+    return None
+
+def validate_job_post_data(data):
+    """ Validate job post data. """
+    required_fields = ['title', 'description', 'employment_type', 'category', 'posted_by']
+
+    errors = {}
+
+    # Check for missing required fields
+    for field in required_fields:
+        if field not in data:
+            errors[field] = 'This field is required.'
+
+    # Validate employment_type
+    if 'employment_type' in data:
+        if not validate_enum(EmploymentTypeEnum, data['employment_type']):
+            errors['employment_type'] = 'Invalid employment type.'
+
+    # Validate category
+    if 'category' in data:
+        if not validate_enum(CategoryEnum, data['category']):
+            errors['category'] = 'Invalid category.'
+
+    # Validate posted_by
+    if 'posted_by' in data:
+        if not isinstance(data['posted_by'], int):
+            errors['posted_by'] = 'posted_by must be an integer.'
+
+    return errors
+
+def validate_update_data(data):
+    """ Validate update data for job posts. """
+    valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str, 'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
+
+    errors = {}
+
+    for field, expected_type in valid_fields.items():
+        if field in data:
+            if expected_type in {EmploymentTypeEnum, CategoryEnum}:
+                if not validate_enum(expected_type, data[field]):
+                    errors[field] = f'Invalid {field}.'
+            elif not isinstance(data[field], expected_type):
+                errors[field] = f'{field} must be of type {expected_type.__name__}.'
+
+    return errors

@@ -25,19 +25,7 @@ class CategoryEnum(enum.Enum):
 class EmploymentTypeEnum(enum.Enum):
     FULL_TIME = "Full-time"
     PART_TIME = "Part-time"
-    CONTRACT = "Contract"
     INTERN = "Intern"
-    TEMPORARY = "Temporary"
-    VOLUNTEER = "Volunteer"
-    OTHER = "Other"
-
-
-def get_enum_value_from_string(enum_class, value):
-    for enum_value in enum_class:
-        if enum_value.value == value:
-            return enum_value
-    return None
-
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -61,13 +49,10 @@ class JobPost(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    salary: Mapped[int] = mapped_column(nullable=False)
-    location: Mapped[str] = mapped_column(nullable=False)
+    salary: Mapped[int] = mapped_column(nullable=True)
+    location: Mapped[str] = mapped_column(nullable=True)
 
     employment_type: Mapped[EmploymentTypeEnum] = mapped_column(Enum(EmploymentTypeEnum), nullable=False)
-
-    posted_by: Mapped[int] = mapped_column(db.ForeignKey('users.id'), nullable=False)
-    posted_by_user = db.relationship('User', backref='job_posts')
 
     category: Mapped[CategoryEnum] = mapped_column(Enum(CategoryEnum), nullable=False)
 
