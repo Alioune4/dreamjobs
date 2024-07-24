@@ -68,3 +68,7 @@ class JobPost(db.Model):
 
     def __repr__(self):
         return f'<Job {self.title}'
+
+
+def row_to_dict(row):
+    return {column.name: getattr(row, column.name) for column in row.__table__.columns}
