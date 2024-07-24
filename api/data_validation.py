@@ -1,5 +1,6 @@
 from api.models import EmploymentTypeEnum, CategoryEnum
 
+
 def validate_enum(enum_class, value):
     """ Validate if the value exists in the provided enum class. """
     for enum_value in enum_class:
@@ -7,11 +8,13 @@ def validate_enum(enum_class, value):
             return True
     return False
 
+
 def get_enum_value_from_string(enum_class, value):
     for enum_value in enum_class:
         if enum_value.value == value:
             return enum_value
     return None
+
 
 def validate_job_post_data(data):
     """ Validate job post data. """
@@ -34,12 +37,13 @@ def validate_job_post_data(data):
         if not validate_enum(CategoryEnum, data['category']):
             errors['category'] = 'Invalid category.'
 
-
     return errors
+
 
 def validate_update_data(data):
     """ Validate update data for job posts. """
-    valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str, 'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
+    valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str,
+                    'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
 
     errors = {}
 
@@ -52,3 +56,18 @@ def validate_update_data(data):
                 errors[field] = f'{field} must be of type {expected_type.__name__}.'
 
     return errors
+
+
+def update_job_post(job_post, data):
+    """ Update a job post with the provided data. """
+    valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str,
+                    'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
+
+    for field, expected_type in valid_fields.items():
+        if field in data:
+            if expected_type in {EmploymentTypeEnum, CategoryEnum}:
+                setattr(job_post, field, get_enum_value_from_string(expected_type, data[field]))
+            else:
+                setattr(job_post, field, data[field])
+
+    return job_post

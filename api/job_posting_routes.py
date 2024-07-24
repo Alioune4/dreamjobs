@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from api.connection import db
-from api.data_validation import validate_job_post_data, validate_update_data
+from api.data_validation import validate_job_post_data, validate_update_data, update_job_post
 from api.models import JobPost, EmploymentTypeEnum, CategoryEnum
 
 
@@ -64,9 +64,7 @@ def update_job(job_id):
     if errors:
         return jsonify({'errors': errors}), 400
 
-    for key, value in data.items():
-        if hasattr(job_post, key):
-            setattr(job_post, key, value)
+    update_job_post(job_post, data)
 
     db.session.commit()
     return jsonify(job_post.to_dict()), 200

@@ -8,7 +8,10 @@ import enum
 class RoleEnum(enum.Enum):
     ADMIN = 'Admin'
     RECRUITER = 'Recruiter'
-    JOB_SEEKER = 'Job_seeker'
+    JOB_SEEKER = 'Job seeker'
+
+    def __str__(self):
+        return self.value
 
 
 class CategoryEnum(enum.Enum):
@@ -21,11 +24,17 @@ class CategoryEnum(enum.Enum):
     DESIGN = "Design"
     OTHER = "Other"
 
+    def __str__(self):
+        return self.value
+
 
 class EmploymentTypeEnum(enum.Enum):
     FULL_TIME = "Full-time"
     PART_TIME = "Part-time"
     INTERN = "Intern"
+
+    def __str__(self):
+        return self.value
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -66,4 +75,11 @@ class JobPost(db.Model):
 
 
 def row_to_dict(row):
-    return {column.name: getattr(row, column.name) for column in row.__table__.columns}
+    output_dict = {}
+    for column in row.__table__.columns:
+        if isinstance(getattr(row, column.name), enum.Enum):
+            output_dict[column.name] = str(getattr(row, column.name))
+        else:
+            output_dict[column.name] = getattr(row, column.name)
+
+    return output_dict
