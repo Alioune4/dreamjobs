@@ -10,3 +10,15 @@ services:
       POSTGRES_DB: 'dreamjobs'
     ports:
       - '5432:5432'
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'dream-jobs-backend'
+    environment:
+      DATABASE_URL: 'postgresql://dreamjobs:dreamjobs@postgres:5432/dreamjobs'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - postgres

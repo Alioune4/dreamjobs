@@ -11,7 +11,7 @@ def create_app():
     # Load the configuration
     app.config.from_object(Config)
 
-    # Initialize the database
+    # Connect sqlalchemy to the app
     db.init_app(app)
 
     # Initialize the migration
@@ -19,9 +19,11 @@ def create_app():
 
     # Register the blueprints
     from .job_posting_routes import job_posting_blueprint
-    app.register_blueprint(job_posting_blueprint)
+    from .job_categories_routes import category_blueprint
+    app.register_blueprint(job_posting_blueprint, url_prefix='/api')
+    app.register_blueprint(category_blueprint, url_prefix='/api')
 
-    # import models so that they are detected by Alembic
+    # import models so that they are detected for migrations
     from api.models import User, JobPost
 
     return app
