@@ -15,7 +15,7 @@ def get_enum_value_from_string(enum_class, value):
 
 def validate_job_post_data(data):
     """ Validate job post data. """
-    required_fields = ['title', 'description', 'employment_type', 'category', 'posted_by']
+    required_fields = ['title', 'description', 'employment_type', 'category']
 
     errors = {}
 
@@ -34,10 +34,6 @@ def validate_job_post_data(data):
         if not validate_enum(CategoryEnum, data['category']):
             errors['category'] = 'Invalid category.'
 
-    # Validate posted_by
-    if 'posted_by' in data:
-        if not isinstance(data['posted_by'], int):
-            errors['posted_by'] = 'posted_by must be an integer.'
 
     return errors
 

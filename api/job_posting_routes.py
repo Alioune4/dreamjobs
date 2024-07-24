@@ -27,7 +27,6 @@ def create_job():
         location=data.get('location'),
         employment_type=EmploymentTypeEnum(data['employment_type']),
         category=CategoryEnum(data['category']),
-        posted_by=data['posted_by']
     )
     db.session.add(job_post)
     db.session.commit()
