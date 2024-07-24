@@ -1,18 +1,42 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 from api.connection import db
+from sqlalchemy import Enum
+import enum
 
 
-class Role(db.Model):
-    __tablename__ = 'roles'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True, nullable=False)
+class RoleEnum(enum.Enum):
+    ADMIN = 'Admin'
+    RECRUITER = 'Recruiter'
+    JOB_SEEKER = 'Job_seeker'
 
-    def __repr__(self):
-        return f'<Role {self.name}>'
 
-    def to_dict(self):
-        return row_to_dict(self)
+class CategoryEnum(enum.Enum):
+    ENGINEERING = "Engineering"
+    MARKETING = "Marketing"
+    SALES = "Sales"
+    HR = "HR"
+    FINANCE = "Finance"
+    ADMINISTRATION = "Administration"
+    DESIGN = "Design"
+    OTHER = "Other"
+
+
+class EmploymentTypeEnum(enum.Enum):
+    FULL_TIME = "Full-time"
+    PART_TIME = "Part-time"
+    CONTRACT = "Contract"
+    INTERN = "Intern"
+    TEMPORARY = "Temporary"
+    VOLUNTEER = "Volunteer"
+    OTHER = "Other"
+
+
+def get_enum_value_from_string(enum_class, value):
+    for enum_value in enum_class:
+        if enum_value.value == value:
+            return enum_value
+    return None
 
 
 class User(db.Model):
@@ -22,37 +46,10 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    role_id: Mapped[int] = mapped_column(db.ForeignKey('roles.id'), nullable=False)
-    role = db.relationship('Role', backref='users')
+    role: Mapped[RoleEnum] = mapped_column(Enum(RoleEnum), nullable=False)
 
     def __repr__(self):
         return f'<User {self.username}>'
-
-    def to_dict(self):
-        return row_to_dict(self)
-
-
-class EmploymentType(db.Model):
-    __tablename__ = 'employment_types'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True, nullable=False)
-
-    def __repr__(self):
-        return f'<EmploymentType {self.name}>'
-
-    def to_dict(self):
-        return row_to_dict(self)
-
-
-class Category(db.Model):
-    __tablename__ = 'categories'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True, nullable=False)
-
-    def __repr__(self):
-        return f'<Category {self.name}>'
 
     def to_dict(self):
         return row_to_dict(self)
@@ -67,14 +64,12 @@ class JobPost(db.Model):
     salary: Mapped[int] = mapped_column(nullable=False)
     location: Mapped[str] = mapped_column(nullable=False)
 
-    employment_type_id: Mapped[int] = mapped_column(db.ForeignKey('employment_types.id'), nullable=False)
-    employment_type = db.relationship('EmploymentType', backref='job_posts')
+    employment_type: Mapped[EmploymentTypeEnum] = mapped_column(Enum(EmploymentTypeEnum), nullable=False)
 
     posted_by: Mapped[int] = mapped_column(db.ForeignKey('users.id'), nullable=False)
     posted_by_user = db.relationship('User', backref='job_posts')
 
-    category_id: Mapped[int] = mapped_column(db.ForeignKey('categories.id'), nullable=False)
-    category = db.relationship('Category', backref='job_posts')
+    category: Mapped[CategoryEnum] = mapped_column(Enum(CategoryEnum), nullable=False)
 
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
