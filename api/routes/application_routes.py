@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from api.connection import db
-from .models import Application, RoleEnum, JobPost, ApplicationStatusEnum, User
+from api.services.connection_service import db
+from api.data_access.models import Application, RoleEnum, JobPost, ApplicationStatusEnum, User
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 

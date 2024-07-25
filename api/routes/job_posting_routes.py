@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
-from api.connection import db
-from api.data_validation import validate_job_post_data, validate_update_data, update_job_post
-from api.models import JobPost, EmploymentTypeEnum, CategoryEnum
+from api.services.connection_service import db
+from api.services.data_validation_service import validate_job_post_data, validate_update_data, update_job_post
+from api.data_access.models import JobPost, EmploymentTypeEnum, CategoryEnum
 
 
 job_posting_blueprint = Blueprint('job_posting_blueprint', __name__)

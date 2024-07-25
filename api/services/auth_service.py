@@ -2,9 +2,9 @@ from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from werkzeug.security import generate_password_hash
 
-from .models import User, RoleEnum
+from api.data_access.models import User, RoleEnum
 from flask import jsonify
-from .connection import db
+from api.services.connection_service import db
 
 
 def admin_required(fn):
@@ -20,7 +20,7 @@ def admin_required(fn):
     return wrapper
 
 
-def create_default_admin():
+def create_default_admin_if_not_exists():
     admin_user = User.query.filter_by(username='admin').first()
     if not admin_user:
         hashed_password = generate_password_hash('adminpassword')

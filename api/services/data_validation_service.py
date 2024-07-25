@@ -1,4 +1,4 @@
-from api.models import EmploymentTypeEnum, CategoryEnum
+from api.data_access.models import EmploymentTypeEnum, CategoryEnum
 
 
 def validate_enum(enum_class, value):

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
-from api.connection import db
+from api.services.connection_service import db
 from sqlalchemy import Enum
 import enum
 
