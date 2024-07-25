@@ -6,6 +6,7 @@ from .models import User, RoleEnum
 from flask import jsonify
 from .connection import db
 
+
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -17,6 +18,7 @@ def admin_required(fn):
         return fn(*args, **kwargs)
 
     return wrapper
+
 
 def create_default_admin():
     admin_user = User.query.filter_by(username='admin').first()

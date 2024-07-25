@@ -27,11 +27,13 @@ def create_app():
         create_default_admin()
 
     # Register the blueprints
-    from .job_posting_routes import job_posting_blueprint
     from .auth_routes import auth_blueprint
+    from .job_posting_routes import job_posting_blueprint
+    from .application_routes import application_blueprint
 
-    app.register_blueprint(job_posting_blueprint, url_prefix='/api/job-posts')
     app.register_blueprint(auth_blueprint, url_prefix='/api')
+    app.register_blueprint(job_posting_blueprint, url_prefix='/api/job-posts')
+    app.register_blueprint(application_blueprint, url_prefix='/api/applications')
 
     # import models so that they are detected for migrations
     from api.models import User, JobPost

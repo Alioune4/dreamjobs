@@ -1,0 +1,5 @@
+- Error handling
+- Logging
+- Testing
+- Documentation
+- Code quality

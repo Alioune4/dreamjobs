@@ -36,6 +36,15 @@ class EmploymentTypeEnum(enum.Enum):
     def __str__(self):
         return self.value
 
+class ApplicationStatusEnum(enum.Enum):
+    PENDING = 'Pending'
+    REVIEWED = 'Reviewed'
+    ACCEPTED = 'Accepted'
+    REJECTED = 'Rejected'
+
+    def __str__(self):
+        return self.value
+
 class User(db.Model):
     __tablename__ = 'users'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -69,6 +78,23 @@ class JobPost(db.Model):
 
     def __repr__(self):
         return f'<Job {self.title}'
+
+    def to_dict(self):
+        return row_to_dict(self)
+
+
+class Application(db.Model):
+    __tablename__ = 'applications'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    job_post_id: Mapped[int] = mapped_column(db.ForeignKey('job_posts.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(db.ForeignKey('users.id'), nullable=False)
+    resume: Mapped[str] = mapped_column(nullable=False)  # Assuming storing the file path or link
+    cover_letter: Mapped[str] = mapped_column(nullable=True)
+    status: Mapped[ApplicationStatusEnum] = mapped_column(Enum(ApplicationStatusEnum), default=ApplicationStatusEnum.PENDING)
+
+    def __repr__(self):
+        return f'<Application {self.id}'
 
     def to_dict(self):
         return row_to_dict(self)
