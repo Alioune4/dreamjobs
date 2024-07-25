@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 from config import Config
 from flask_migrate import Migrate
@@ -38,4 +38,14 @@ def create_app():
     # import models so that they are detected for migrations
     from api.data_access.models import User, JobPost
 
+    register_error_handlers(app)
+
     return app
+
+
+def register_error_handlers(app):
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        response = jsonify({'message': 'Internal Server Error', 'details': str(error)})
+        response.status_code = 500
+        return response
