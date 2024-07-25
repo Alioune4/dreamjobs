@@ -11,7 +11,7 @@ application_blueprint = Blueprint('application_blueprint', __name__)
 @jwt_required()
 def get_applications():
     user = get_jwt_identity()
-    if user['role'] == RoleEnum.ADMIN or user['role'] == RoleEnum.RECRUITER:
+    if user['role'] == RoleEnum.ADMIN.value or user['role'] == RoleEnum.RECRUITER.value:
         applications = Application.query.all()
     else:
         applications = Application.query.filter_by(user_id=user['id']).all()
@@ -62,7 +62,7 @@ def update_application(application_id):
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
-    if user.role != RoleEnum.ADMIN and user.id != application.user_id:
+    if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
         return jsonify({'message': 'Unauthorized'}), 403
 
     for key, value in data.items():
@@ -82,7 +82,7 @@ def delete_application(application_id):
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
-    if user.role != RoleEnum.ADMIN and user.id != application.user_id:
+    if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
         return jsonify({'message': 'Unauthorized'}), 403
 
     db.session.delete(application)
