@@ -1,4 +1,4 @@
-from api.data_access.models import EmploymentTypeEnum, CategoryEnum
+from api.data_access.models import EmploymentTypeEnum, CategoryEnum, ApplicationStatusEnum
 
 
 def validate_enum(enum_class, value):
@@ -39,8 +39,7 @@ def validate_job_post_data(data):
 
     return errors
 
-
-def validate_update_data(data):
+def validate_job_post_update_data(data):
     """ Validate update data for job posts. """
     valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str,
                     'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
@@ -50,6 +49,38 @@ def validate_update_data(data):
     for field, expected_type in valid_fields.items():
         if field in data:
             if expected_type in {EmploymentTypeEnum, CategoryEnum}:
+                if not validate_enum(expected_type, data[field]):
+                    errors[field] = f'Invalid {field}.'
+            elif not isinstance(data[field], expected_type):
+                errors[field] = f'{field} must be of type {expected_type.__name__}.'
+
+    return errors
+
+
+
+def validate_application_data(data):
+    """ Validate application data. """
+    required_fields = ['job_post_id', 'resume']
+
+    errors = {}
+
+    # Check for missing required fields
+    for field in required_fields:
+        if field not in data:
+            errors[field] = 'This field is required.'
+
+    return errors
+
+
+def validate_application_update_data(data):
+    """ Validate update data for applications. """
+    valid_fields = {'resume': str, 'cover_letter': str, 'status': ApplicationStatusEnum}
+
+    errors = {}
+
+    for field, expected_type in valid_fields.items():
+        if field in data:
+            if expected_type == ApplicationStatusEnum:
                 if not validate_enum(expected_type, data[field]):
                     errors[field] = f'Invalid {field}.'
             elif not isinstance(data[field], expected_type):

@@ -36,16 +36,11 @@ def create_app():
     app.register_blueprint(application_blueprint, url_prefix='/api/applications')
 
     # import models so that they are detected for migrations
-    from api.data_access.models import User, JobPost
+    from api.data_access.models import User, JobPost, Application
 
-    register_error_handlers(app)
+    @app.errorhandler(Exception)
+    def handle_general_exception(e):
+        return jsonify({'message': 'internal server error'}), 500
 
     return app
 
-
-def register_error_handlers(app):
-    @app.errorhandler(500)
-    def internal_server_error(error):
-        response = jsonify({'message': 'Internal Server Error', 'details': str(error)})
-        response.status_code = 500
-        return response

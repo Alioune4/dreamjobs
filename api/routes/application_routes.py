@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from api.services.connection_service import db
 from api.data_access.models import Application, RoleEnum, JobPost, ApplicationStatusEnum, User
+from api.services.data_validation_service import validate_application_data, validate_application_update_data
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 
@@ -31,6 +32,11 @@ def get_application(application_id):
 @jwt_required()
 def apply():
     data = request.get_json()
+
+    errors = validate_application_data(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
+
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
@@ -59,11 +65,16 @@ def update_application(application_id):
         return jsonify({'message': 'Application not found'}), 404
 
     data = request.get_json()
+
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
     if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
         return jsonify({'message': 'Unauthorized'}), 403
+
+    errors = validate_application_update_data(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
 
     for key, value in data.items():
         setattr(application, key, value)
