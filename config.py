@@ -1,7 +1,9 @@
+import os
+
 class Config:
     """Base configuration."""
     DEBUG = True
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = "postgresql://dreamjobs:dreamjobs@postgres:5432/dreamjobs"
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = "c6cb1e67f6cc9b808152f7f46963912da411bb2fffb1a192eb23df76b9197edb"
+    SECRET_KEY = os.environ.get('SECRET_KEY')

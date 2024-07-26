@@ -18,6 +18,7 @@ services:
     container_name: 'dream-jobs-backend'
     environment:
       DATABASE_URL: 'postgresql://dreamjobs:dreamjobs@postgres:5432/dreamjobs'
+      SECRET_KEY: 'c6cb1e67f6cc9b808152f7f46963912da411bb2fffb1a192eb23df76b9197edb'
     ports:
       - '5000:5000'
     depends_on:
