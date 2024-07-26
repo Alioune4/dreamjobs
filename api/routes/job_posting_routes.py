@@ -3,6 +3,7 @@ from api.services.connection_service import db
 from api.services.data_validation_service import validate_job_post_data, validate_application_update_data, update_job_post
 from api.data_access.models import JobPost, EmploymentTypeEnum, CategoryEnum
 from api.services.auth_service import admin_or_recruiter_required
+from werkzeug.exceptions import NotFound
 
 
 job_posting_blueprint = Blueprint('job_posting_blueprint', __name__)
@@ -18,9 +19,7 @@ def get_jobs():
 def create_job():
     data = request.json
 
-    errors = validate_job_post_data(data)
-    if errors:
-        return jsonify({'errors': errors}), 400
+    validate_job_post_data(data)
 
     job_post = JobPost(
         title=data['title'],
@@ -39,8 +38,8 @@ def create_job():
 def get_job(job_id):
     job_post = JobPost.query.get(job_id)
     if job_post is None:
-        return jsonify({'error': 'Job not found'}), 404
-    return jsonify(job_post.to_dict())
+        raise NotFound('Job not found')
+    return jsonify(job_post.to_dict()), 200
 
 
 @job_posting_blueprint.route('/<int:job_id>', methods=['DELETE'])
@@ -48,7 +47,7 @@ def get_job(job_id):
 def delete_job(job_id):
     job_post = JobPost.query.get(job_id)
     if job_post is None:
-        return jsonify({'error': 'Job not found'}), 404
+        raise NotFound('Job not found')
     db.session.delete(job_post)
     db.session.commit()
     return jsonify({'message': 'Job deleted'}), 200
@@ -59,14 +58,11 @@ def delete_job(job_id):
 def update_job(job_id):
     job_post = JobPost.query.get(job_id)
     if job_post is None:
-        return jsonify({'error': 'Job not found'}), 404
+        raise NotFound('Job not found')
 
     data = request.json
 
-    errors = validate_application_update_data(data)
-
-    if errors:
-        return jsonify({'errors': errors}), 400
+    validate_application_update_data(data)
 
     update_job_post(job_post, data)
 

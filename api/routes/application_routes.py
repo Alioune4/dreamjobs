@@ -4,6 +4,7 @@ from api.data_access.models import Application, RoleEnum, JobPost, ApplicationSt
 from api.services.data_validation_service import validate_application_data, validate_application_update_data
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
+from werkzeug.exceptions import Forbidden, NotFound, Unauthorized
 
 application_blueprint = Blueprint('application_blueprint', __name__)
 
@@ -28,10 +29,11 @@ def get_application(application_id):
     user = User.query.get(current_user['id'])
 
     if user.role != RoleEnum.ADMIN.value and user.role != RoleEnum.RECRUITER and user.id != application.user_id:
-        return jsonify({'message': 'Unauthorized'}), 403
+        raise Forbidden('Forbidden access to application')
 
     if not application:
-        return jsonify({'message': 'Application not found'}), 404
+        raise NotFound('Application not found')
+
     return jsonify(application.to_dict())
 
 
@@ -49,7 +51,7 @@ def apply():
 
     job_post = JobPost.query.get(data['job_post_id'])
     if not job_post:
-        return jsonify({'message': 'Job post not found'}), 404
+        raise NotFound('Job post not found')
 
     application = Application(
         user_id=user.id,
@@ -69,7 +71,7 @@ def apply():
 def update_application(application_id):
     application = Application.query.get(application_id)
     if not application:
-        return jsonify({'message': 'Application not found'}), 404
+        raise NotFound('Application not found')
 
     data = request.get_json()
 
@@ -77,11 +79,9 @@ def update_application(application_id):
     user = User.query.get(current_user['id'])
 
     if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
-        return jsonify({'message': 'Unauthorized'}), 403
+        raise Unauthorized
 
-    errors = validate_application_update_data(data)
-    if errors:
-        return jsonify({'errors': errors}), 400
+    validate_application_update_data(data)
 
     for key, value in data.items():
         setattr(application, key, value)
@@ -95,13 +95,13 @@ def update_application(application_id):
 def delete_application(application_id):
     application = Application.query.get(application_id)
     if not application:
-        return jsonify({'message': 'Application not found'}), 404
+        raise NotFound('Application not found')
 
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
     if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
-        return jsonify({'message': 'Unauthorized'}), 403
+        raise Unauthorized
 
     db.session.delete(application)
     db.session.commit()
