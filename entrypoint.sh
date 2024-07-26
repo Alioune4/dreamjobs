@@ -5,3 +5,6 @@ sleep 5
 
 # Run the migrations
 python3 -m flask db upgrade
+
+# Start the application
+python3 run.py
