@@ -38,9 +38,15 @@ def create_app():
     # import models so that they are detected for migrations
     from api.data_access.models import User, JobPost, Application
 
+    # Error handling
+    from werkzeug.exceptions import HTTPException
+
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        return jsonify({'error': e.description}), e.code
+
     @app.errorhandler(Exception)
     def handle_general_exception(e):
-        return jsonify({'message': 'internal server error'}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
     return app
-
