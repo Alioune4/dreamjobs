@@ -44,16 +44,3 @@ def login():
 
     access_token = create_access_token(identity={'id': user.id, 'role': str(user.role)})
     return jsonify(access_token=access_token), 200
-
-
-@auth_blueprint.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
-
-@auth_blueprint.route('/admin', methods=['GET'])
-@admin_required
-def protected2():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200

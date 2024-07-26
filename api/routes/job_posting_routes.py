@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from api.services.connection_service import db
 from api.services.data_validation_service import validate_job_post_data, validate_application_update_data, update_job_post
 from api.data_access.models import JobPost, EmploymentTypeEnum, CategoryEnum
+from api.services.auth_service import admin_or_recruiter_required
 
 
 job_posting_blueprint = Blueprint('job_posting_blueprint', __name__)
@@ -13,6 +14,7 @@ def get_jobs():
 
 
 @job_posting_blueprint.route('/', methods=['POST'])
+@admin_or_recruiter_required
 def create_job():
     data = request.json
 
@@ -42,6 +44,7 @@ def get_job(job_id):
 
 
 @job_posting_blueprint.route('/<int:job_id>', methods=['DELETE'])
+@admin_or_recruiter_required
 def delete_job(job_id):
     job_post = JobPost.query.get(job_id)
     if job_post is None:
@@ -52,6 +55,7 @@ def delete_job(job_id):
 
 
 @job_posting_blueprint.route('/<int:job_id>', methods=['PUT'])
+@admin_or_recruiter_required
 def update_job(job_id):
     job_post = JobPost.query.get(job_id)
     if job_post is None:

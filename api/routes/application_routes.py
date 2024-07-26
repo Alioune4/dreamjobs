@@ -23,6 +23,13 @@ def get_applications():
 @jwt_required()
 def get_application(application_id):
     application = Application.query.get(application_id)
+
+    current_user = get_jwt_identity()
+    user = User.query.get(current_user['id'])
+
+    if user.role != RoleEnum.ADMIN.value and user.role != RoleEnum.RECRUITER and user.id != application.user_id:
+        return jsonify({'message': 'Unauthorized'}), 403
+
     if not application:
         return jsonify({'message': 'Application not found'}), 404
     return jsonify(application.to_dict())

@@ -19,6 +19,18 @@ def admin_required(fn):
 
     return wrapper
 
+def admin_or_recruiter_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        verify_jwt_in_request()
+        current_user = get_jwt_identity()
+        user = User.query.filter_by(id=current_user['id']).first()
+        if user.role != RoleEnum.ADMIN and user.role != RoleEnum.RECRUITER:
+            return jsonify({"msg": "Admins and recruiters only!"}), 403
+        return fn(*args, **kwargs)
+
+    return wrapper
+
 
 def create_default_admin_if_not_exists():
     admin_user = User.query.filter_by(username='admin').first()
