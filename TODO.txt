@@ -1,5 +1,4 @@
-- Error handling
 - Logging
 - Testing
 - Documentation
-- Code quality
+- Hide sensitive params into environment variables
