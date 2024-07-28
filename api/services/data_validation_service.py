@@ -1,5 +1,6 @@
 from api.data_access.models import EmploymentTypeEnum, CategoryEnum, ApplicationStatusEnum
 from werkzeug.exceptions import BadRequest
+import enum as python_enum
 
 def validate_enum(enum_class, value):
     """ Validate if the value exists in the provided enum class. """
@@ -11,60 +12,53 @@ def get_enum_value_from_string(enum_class, value):
     return enum_class(value)
 
 
-def validate_required_fields(data, required_fields):
-    for field in required_fields:
-        if field not in data:
-            raise BadRequest(description=f'{field} is required.')
+def validate_fields(data, required_fields=None, enum_fields=None, field_types=None):
+    """ Validate required fields, enum fields, and non enum field types. """
+    if required_fields:
+        for field in required_fields:
+            if field not in data:
+                raise BadRequest(description=f'{field} is required.')
+
+    if enum_fields:
+        for field, enum_class in enum_fields.items():
+            if field in data:
+                validate_enum(enum_class, data[field])
+
+    if field_types:
+        for field, expected_type in field_types.items():
+            if not issubclass(expected_type, python_enum.Enum) and  field in data and not isinstance(data[field], expected_type):
+                raise BadRequest(description=f'Expected type {expected_type.__name__} for {field}')
 
 
-def validate_enum_fields(data, enum_fields):
-    for field, enum_class in enum_fields.items():
-        if field in data:
-            validate_enum(enum_class, data[field])
+def validate_job_post_data(data, is_update=False):
+    """ Validate job post data for create or update. """
+    if not is_update:
+        required_fields = ['title', 'description', 'employment_type', 'category']
+    else:
+        required_fields = None  # No required fields for update
 
-
-def validate_field_types(data, field_types):
-    for field, expected_type in field_types.items():
-        if field in data and not isinstance(data[field], expected_type):
-            raise BadRequest(description=f'Expected type {expected_type.__name__} for {field}')
-
-
-def validate_job_post_data(data):
-    """ Validate job post data. """
-    required_fields = ['title', 'description', 'employment_type', 'category']
     enum_fields = {'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
+    field_types = {
+        'title': str, 'description': str, 'salary': int, 'location': str,
+        'employment_type': EmploymentTypeEnum, 'category': CategoryEnum
+    }
 
-    validate_required_fields(data, required_fields)
-    validate_enum_fields(data, enum_fields)
-
-
-def validate_job_post_update_data(data):
-    """ Validate update data for job posts. """
-    valid_fields = {'title': str, 'description': str, 'salary': int, 'location': str,
-                    'employment_type': EmploymentTypeEnum, 'category': CategoryEnum}
-
-    enum_fields = {field: enum_class for field, enum_class in valid_fields.items() if enum_class in {EmploymentTypeEnum, CategoryEnum}}
-    non_enum_fields = {field: field_type for field, field_type in valid_fields.items() if field_type not in {EmploymentTypeEnum, CategoryEnum}}
-
-    validate_enum_fields(data, enum_fields)
-    validate_field_types(data, non_enum_fields)
+    validate_fields(data, required_fields,
+                    enum_fields if not is_update else {k: v for k, v in enum_fields.items() if k in data}, field_types)
 
 
-def validate_application_data(data):
-    """ Validate application data. """
-    required_fields = ['job_post_id', 'resume']
-    validate_required_fields(data, required_fields)
+def validate_application_data(data, is_update=False):
+    """ Validate application data for create or update. """
+    if not is_update:
+        required_fields = ['job_post_id', 'resume']
+    else:
+        required_fields = None  # No required fields for update
 
+    enum_fields = {'status': ApplicationStatusEnum}
+    field_types = {'resume': str, 'cover_letter': str}
 
-def validate_application_update_data(data):
-    """ Validate update data for applications. """
-    valid_fields = {'resume': str, 'cover_letter': str, 'status': ApplicationStatusEnum}
-
-    enum_fields = {field: enum_class for field, enum_class in valid_fields.items() if enum_class == ApplicationStatusEnum}
-    non_enum_fields = {field: field_type for field, field_type in valid_fields.items() if field_type != ApplicationStatusEnum}
-
-    validate_enum_fields(data, enum_fields)
-    validate_field_types(data, non_enum_fields)
+    validate_fields(data, required_fields,
+                    enum_fields if not is_update else {k: v for k, v in enum_fields.items() if k in data}, field_types)
 
 
 def update_job_post(job_post, data):

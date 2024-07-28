@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from api.services.connection_service import db
 from api.data_access.models import Application, RoleEnum, JobPost, ApplicationStatusEnum, User
-from api.services.data_validation_service import validate_application_data, validate_application_update_data
+from api.services.data_validation_service import validate_application_data
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from werkzeug.exceptions import Forbidden, NotFound, Unauthorized
@@ -81,7 +81,7 @@ def update_application(application_id):
     if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
         raise Unauthorized
 
-    validate_application_update_data(data)
+    validate_application_data(data, is_update=True)
 
     for key, value in data.items():
         setattr(application, key, value)

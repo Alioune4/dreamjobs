@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from api.services.connection_service import db
-from api.services.data_validation_service import validate_job_post_data, validate_application_update_data, update_job_post
+from api.services.data_validation_service import validate_job_post_data, update_job_post
 from api.data_access.models import JobPost, EmploymentTypeEnum, CategoryEnum
 from api.services.auth_service import admin_or_recruiter_required
 from werkzeug.exceptions import NotFound
@@ -62,7 +62,7 @@ def update_job(job_id):
 
     data = request.json
 
-    validate_application_update_data(data)
+    validate_job_post_data(data, is_update=True)
 
     update_job_post(job_post, data)
 
