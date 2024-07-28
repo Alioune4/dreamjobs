@@ -5,6 +5,7 @@ from api.data_access.models import User, RoleEnum
 from werkzeug.security import generate_password_hash
 import json
 
+
 @pytest.fixture(scope='module')
 def test_client():
     flask_app = create_app(config_class='config.TestConfig')
@@ -19,9 +20,11 @@ def test_client():
     db.drop_all()
     ctx.pop()
 
+
 @pytest.fixture(scope='module')
 def init_database(test_client):
     return db
+
 
 @pytest.fixture(scope='module')
 def new_job_seeker(init_database):
@@ -35,6 +38,7 @@ def new_job_seeker(init_database):
     init_database.session.commit()
     return user
 
+
 @pytest.fixture(scope='module')
 def new_admin(init_database):
     user = User(
@@ -47,6 +51,7 @@ def new_admin(init_database):
     init_database.session.commit()
     return user
 
+
 @pytest.fixture(scope='module')
 def new_recruiter(init_database):
     user = User(
@@ -58,6 +63,7 @@ def new_recruiter(init_database):
     init_database.session.add(user)
     init_database.session.commit()
     return user
+
 
 @pytest.fixture
 def login_as_admin(test_client, new_admin):
@@ -72,6 +78,7 @@ def login_as_admin(test_client, new_admin):
         raise ValueError("No access token received")
     return access_token
 
+
 @pytest.fixture
 def login_as_recruiter(test_client, new_recruiter):
     response = test_client.post('/api/login', json={
@@ -85,6 +92,7 @@ def login_as_recruiter(test_client, new_recruiter):
         raise ValueError("No access token received")
     return access_token
 
+
 @pytest.fixture
 def login_as_job_seeker(test_client, new_job_seeker):
     response = test_client.post('/api/login', json={
@@ -94,6 +102,18 @@ def login_as_job_seeker(test_client, new_job_seeker):
     data = json.loads(response.data)
     access_token = data.get('access_token')
     if access_token is None:
-        print(f"Login response data for job seeker: {data}") # Debugging line
+        print(f"Login response data for job seeker: {data}")  # Debugging line
         raise ValueError("No access token received")
     return access_token
+
+
+@pytest.fixture
+def job_post_data():
+    return {
+        'title': 'Software Engineer',
+        'description': 'We are looking for a software engineer',
+        'location': 'Remote',
+        'employment_type': 'Full-time',
+        'category': 'Engineering',
+        'salary': 100000
+    }
