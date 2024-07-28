@@ -10,3 +10,5 @@
 - Add CI for the tests
 
 - Documentation
+
+- Remove non needed initializations in tests

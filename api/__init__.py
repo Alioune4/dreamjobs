@@ -1,12 +1,9 @@
-from flask import Flask, jsonify
-
-from config import Config
+from flask import Flask, jsonify, send_from_directory
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
+from config import Config
 from api.services.connection_service import db
-
-from flask_jwt_extended import JWTManager
-
 
 
 def create_app(config_class=Config):
@@ -27,14 +24,24 @@ def create_app(config_class=Config):
             from .services.auth_service import create_default_admin_if_not_exists
             create_default_admin_if_not_exists()
 
+    # Documentation
+    from .routes.documentation_routes import swaggerui_blueprint, SWAGGER_URL
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+    @app.route('/static/<path:filename>')
+    def static_files(filename):
+        return send_from_directory('static', filename)
+
     # Register the blueprints
     from .routes.auth_routes import auth_blueprint
     from .routes.job_posting_routes import job_posting_blueprint
     from .routes.application_routes import application_blueprint
+    from .routes.user_handling_routes import user_handling_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix='/api')
     app.register_blueprint(job_posting_blueprint, url_prefix='/api/job-posts')
     app.register_blueprint(application_blueprint, url_prefix='/api/applications')
+    app.register_blueprint(user_handling_blueprint, url_prefix='/api/users')
 
     # import models so that they are detected for migrations
     from api.data_access.models import User, JobPost, Application
