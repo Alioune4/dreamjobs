@@ -1,11 +1,10 @@
 from functools import wraps
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from werkzeug.security import generate_password_hash
-
 from api.data_access.models import User, RoleEnum
 from flask import jsonify
 from api.services.connection_service import db
-
+import os
 
 def admin_required(fn):
     @wraps(fn)
@@ -35,7 +34,9 @@ def admin_or_recruiter_required(fn):
 def create_default_admin_if_not_exists():
     admin_user = User.query.filter_by(username='admin').first()
     if not admin_user:
-        hashed_password = generate_password_hash('adminpassword')
-        admin_user = User(username='admin', password=hashed_password, email='admin@example.com', role=RoleEnum.ADMIN)
+        admin_password = os.getenv('ADMIN_PASSWORD', 'adminpassword')
+        admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+        hashed_password = generate_password_hash(admin_password, method='sha256')
+        admin_user = User(username='admin', password=hashed_password, email=admin_email, role=RoleEnum.ADMIN)
         db.session.add(admin_user)
         db.session.commit()

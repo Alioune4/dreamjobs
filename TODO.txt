@@ -1,4 +1,6 @@
 - Logging
-- Testing
+- Add volume for postgres
+- Dockerize the tests
+- Add tests for the all the endpoints
+- Add CI for the tests
 - Documentation
-- Hide sensitive params into environment variables
