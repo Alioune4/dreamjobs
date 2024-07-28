@@ -1,4 +1,4 @@
-from api.data_access.models import EmploymentTypeEnum, CategoryEnum, ApplicationStatusEnum
+from api.data_access.models import EmploymentTypeEnum, CategoryEnum, ApplicationStatusEnum, RoleEnum
 from werkzeug.exceptions import BadRequest
 import enum as python_enum
 
@@ -56,6 +56,19 @@ def validate_application_data(data, is_update=False):
 
     enum_fields = {'status': ApplicationStatusEnum}
     field_types = {'resume': str, 'cover_letter': str}
+
+    validate_fields(data, required_fields,
+                    enum_fields if not is_update else {k: v for k, v in enum_fields.items() if k in data}, field_types)
+
+def validate_user_data(data, is_update=False):
+    """ Validate user data for create or update. """
+    if not is_update:
+        required_fields = ['email', 'password', 'role']
+    else:
+        required_fields = None  # No required fields for update
+
+    enum_fields = {'role': RoleEnum}
+    field_types = {'email': str, 'password': str, 'role': RoleEnum}
 
     validate_fields(data, required_fields,
                     enum_fields if not is_update else {k: v for k, v in enum_fields.items() if k in data}, field_types)
