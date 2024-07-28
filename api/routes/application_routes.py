@@ -28,11 +28,11 @@ def get_application(application_id):
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
-    if user.role != RoleEnum.ADMIN.value and user.role != RoleEnum.RECRUITER and user.id != application.user_id:
-        raise Forbidden('Forbidden access to application')
-
     if not application:
         raise NotFound('Application not found')
+
+    if user.role != RoleEnum.ADMIN.value and user.role != RoleEnum.RECRUITER and user.id != application.user_id:
+        raise Forbidden('Forbidden access to application')
 
     return jsonify(application.to_dict())
 
@@ -42,9 +42,7 @@ def get_application(application_id):
 def apply():
     data = request.get_json()
 
-    errors = validate_application_data(data)
-    if errors:
-        return jsonify({'errors': errors}), 400
+    validate_application_data(data)
 
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])

@@ -1,6 +1,12 @@
 - Logging
+
 - Add volume for postgres
+- Change enums into tables
+
 - Dockerize the tests
 - Add tests for the all the endpoints
+- Add tests for the all the services
+- Add functional tests
 - Add CI for the tests
+
 - Documentation
