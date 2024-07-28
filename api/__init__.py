@@ -7,7 +7,6 @@ from api.services.connection_service import db
 
 from flask_jwt_extended import JWTManager
 
-jwt = JWTManager()
 
 
 def create_app(config_class=Config):
@@ -19,12 +18,14 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     migrate = Migrate(app, db)
+    jwt = JWTManager()
     jwt.init_app(app)
 
-    with app.app_context():
-        # Create default admin user
-        from .services.auth_service import create_default_admin_if_not_exists
-        create_default_admin_if_not_exists()
+    if not app.config['TESTING']:
+        with app.app_context():
+            # Create default admin user
+            from .services.auth_service import create_default_admin_if_not_exists
+            create_default_admin_if_not_exists()
 
     # Register the blueprints
     from .routes.auth_routes import auth_blueprint
@@ -47,6 +48,7 @@ def create_app(config_class=Config):
 
     @app.errorhandler(Exception)
     def handle_general_exception(e):
+        app.logger.exception(e)
         return jsonify({'error': 'Internal server error'}), 500
 
     return app
