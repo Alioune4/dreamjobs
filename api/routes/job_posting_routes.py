@@ -11,7 +11,7 @@ job_posting_blueprint = Blueprint('job_posting_blueprint', __name__)
 @job_posting_blueprint.route('/', methods=['GET'])
 def get_jobs():
     jobs = JobPost.query.all()
-    return jsonify([job.to_dict() for job in jobs])
+    return jsonify([job.to_dict() for job in jobs]), 200
 
 
 @job_posting_blueprint.route('/', methods=['POST'])
