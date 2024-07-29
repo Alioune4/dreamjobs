@@ -58,7 +58,9 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     def to_dict(self):
-        return row_to_dict(self)
+        dictionary = row_to_dict(self)
+        dictionary.pop('password')
+        return dictionary
 
 
 class JobPost(db.Model):

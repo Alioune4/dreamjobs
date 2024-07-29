@@ -76,7 +76,7 @@ def update_application(application_id):
     current_user = get_jwt_identity()
     user = User.query.get(current_user['id'])
 
-    if user.role != RoleEnum.ADMIN.value and user.id != application.user_id:
+    if user.role != RoleEnum.ADMIN.value and user.id != application.user_id and user.role != RoleEnum.RECRUITER.value:
         raise Unauthorized
 
     validate_application_data(data, is_update=True)

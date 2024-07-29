@@ -12,3 +12,5 @@
 - Export the postman collection and add it to the repo
 
 - Initialisation of the database
+
+- Make enum validation more robust (case insensitive)
