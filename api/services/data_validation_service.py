@@ -9,6 +9,7 @@ def validate_enum(enum_class, value):
 
 
 def get_enum_value_from_string(enum_class, value):
+    """ Get the enum value from a string in the provided enum class."""
     return enum_class(value)
 
 
