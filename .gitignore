@@ -1,3 +1,5 @@
 .idea
 **/__pycache__
 wslvenv
+venv
+.pytest_cache
